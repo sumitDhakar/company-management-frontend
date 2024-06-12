@@ -1,0 +1,68 @@
+
+
+    // pagination css
+    .page-link:focus {
+      color: #fff !important;
+      background-color: #ec840c !important;
+      outline: 0;
+      box-shadow: none !important;
+      border-radius: 6px;
+    
+    }
+    
+    .pagination {
+      align-items: center;
+      --bs-pagination-border-color: none;
+      --bs-pagination-bg: #fbefe9;
+      --bs-pagination-border-radius: 6px !important;
+    }
+    
+    .page-link {
+      color: #ec840c !important;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 8px 17px;
+    }
+    
+    .table-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+    
+    .pagination {
+      align-items: center;
+      --bs-pagination-border-color: none !important;
+      --bs-pagination-bg: #e6ecfd !important;
+      --bs-pagination-border-radius: 6px !important;
+    }
+    
+    ul li a {
+      padding: 13px 15px 13px 20px;
+    }
+    
+    .page-link:hover {
+      z-index: 2;
+      color: var(--bs-pagination-hover-color);
+      background-color: var(--bs-pagination-hover-bg);
+      border-color: var(--bs-pagination-hover-border-color);
+    }
+      
+    .inactiveLink {
+      pointer-events: none;
+      cursor: default;
+    }
+    .active{
+      background-color: #ec840c ;
+      color: white !important;
+      border-radius: 9px;
+    }
+
+      
+.theading {
+  color: #667085;
+}
+.cur-point{
+  cursor: pointer;
+}

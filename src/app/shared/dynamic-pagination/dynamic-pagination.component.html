@@ -1,0 +1,22 @@
+<nav aria-label="Page navigation example" class="table-pagination">
+    <ul class="pagination d-flex justify-content-center">
+            <button class="p-2 mx-2 ms-0 btn btn-warning" [disabled]="pageRequest.pageNumber == 0"><a class="fs-16 fw-500 secondary "
+                        [ngClass]="paginationManager.first?'theading ':' cur-point'"
+                            (click)="ManageNextPrev(false)">Previous</a>
+            </button>
+            <li class="page-item cur-point" *ngFor="let b1 of paginationManager.showButtons ;"
+                    (click)="getData(b1-1)"><a class="page-link text_orange "
+                            [ngClass]="pageRequest.pageNumber==b1-1?'active':''" id="{{b1}}"
+                            href="javascript:void(0)">{{b1}}</a>
+            </li>
+            <!-- <li class="p-2  mx-0 ms-2"><a class="fs-16 fw-500 secondary"
+                            [ngClass]="paginationManager.last?'theading':' cur-point'"
+                            *ngIf="!paginationManager.last"            (click)="ManageNextPrev(true)">Next</a>
+            </li> -->
+            <button class="p-2 mx-2 ms-0 btn btn-warning" [disabled]="paginationManager.last"><a class="fs-16 fw-500 secondary "
+                [ngClass]="paginationManager.last?'theading':' cur-point'"
+                    (click)="ManageNextPrev(true)">Next</a>
+    </button>
+    </ul>
+    
+</nav>

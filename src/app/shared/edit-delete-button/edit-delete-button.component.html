@@ -1,0 +1,14 @@
+<a class="btn  dropdown-toggle  main-drop" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
+    aria-expanded="false">
+    <i class="material-icons">more_vert</i>
+</a>
+<div class="dropdown-menu dropdown-menu-right">
+    <a class="dropdown-item" *ngIf="permissions.isEditable" (click)="onEdit()" data-toggle="modal"
+        [attr.data-target]="'#'+editDataTarget">
+        <i class="fa fa-pencil m-r-5"></i> Edit
+    </a>
+    <a class="dropdown-item" *ngIf="permissions.isDeleteable" (click)="onDelete()" data-toggle="modal"
+        [attr.data-target]="'#'+deleteDataTarget">
+        <i class="fa fa-trash-o m-r-5"></i> Delete
+    </a>
+</div>

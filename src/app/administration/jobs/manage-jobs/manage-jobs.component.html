@@ -1,0 +1,673 @@
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+
+	<!-- Page Content -->
+	<div class="content container-fluid">
+
+		<!-- Page Header -->
+		<div class="page-header">
+			<div class="row align-items-center">
+				<div class="col">
+					<h3 class="page-title">Jobs</h3>
+					<ul class="breadcrumb">
+						<li class="breadcrumb-item"><a [routerLink]="baseRoute">Dashboard</a></li>
+						<li class="breadcrumb-item active">Jobs</li>
+					</ul>
+				</div>
+				<div class="col-auto float-right ml-auto">
+					<a class="btn add-btn" data-toggle="modal" (click)="addForm()" data-target="#add_job"><i
+							class="fa fa-plus"></i> Add Job</a>
+				</div>
+			</div>
+		</div>
+		<!-- /Page Header -->
+
+
+
+		<mat-paginator #paginator class="demo-paginator" (page)="handlePageEvent($event)" [length]="length"
+			[pageSize]="pageSize" [disabled]="disabled" [showFirstLastButtons]="showFirstLastButtons"
+			[pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []" [hidePageSize]="hidePageSize"
+			[pageIndex]="pageIndex" aria-label="Select page">
+		</mat-paginator>
+		<!---pagination end -->
+
+
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped custom-table mb-0 datatable">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Job Title</th>
+								<th>Department</th>
+								<th>Start Date</th>
+								<th>Expire Date</th>
+								<th class="text-center">Job Type</th>
+								<th class="text-center">Status</th>
+								<th>Applicants</th>
+								<th class="text-right">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr *ngFor="let mj of manageJobs let i = index">
+								<td>{{sequence+i+1}}</td>
+								<td><a [routerLink]="baseRoute+'/jobs/job-details/'+mj.id">{{mj.jobTitle.title}} </a>
+								</td>
+								<td>{{mj.department.title}}</td>
+								<td>{{mj.startDate}}</td>
+								<td>{{mj.expiredDate}}</td>
+								<td class="text-center">
+									<div class="dropdown action-label">
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i
+												[ngClass]="'fa fa-dot-circle-o ' +(mj.jobType=='Full Time'?'text-info':(mj.jobType=='Part Time'?'text-success':'text-danger') )">
+												{{mj.jobType}}
+											</i> </a>
+
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Full Time','jobType') "><i
+													class="fa fa-dot-circle-o text-info"></i> Full Time</a>
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Part Time','jobType') "><i
+													class="fa fa-dot-circle-o text-success"></i> Part Time</a>
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Internship','jobType') "><i
+													class="fa fa-dot-circle-o text-danger"></i> Internship</a>
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Temporary','jobType') "><i
+													class="fa fa-dot-circle-o text-warning"></i> Temporary</a>
+											
+										</div>
+									</div>
+								</td>
+								<td class="text-center">
+									<div class="dropdown action-label">
+										<a class="btn btn-white btn-sm btn-rounded dropdown-toggle" href="#"
+											data-bs-toggle="dropdown" aria-expanded="false">
+											<i
+												[ngClass]="'fa fa-dot-circle-o ' +(mj.status=='Cancelled'?'text-danger':(mj.jobType=='Open'?'text-info':'text-info'))">
+												{{mj.status}}</i>
+										</a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Open','status') "><i
+													class="fa fa-dot-circle-o text-info"></i> Open</a>
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Closed','status') "><i
+													class="fa fa-dot-circle-o text-success"></i> Closed</a>
+											<a class="dropdown-item"
+												(click)="updateManageJobStatus(mj.id,'Cancelled','status') "><i
+													class="fa fa-dot-circle-o text-danger"></i> Cancelled</a>
+										</div>
+									</div>
+								</td>
+								<td><a [routerLink]="baseRoute+'/jobs/applied_candidates/'+mj.id"
+										class="btn btn-sm btn-primary">{{mj.totalAppliedCandidates}} Candidates</a></td>
+								<td class="text-right">
+									<div class="dropdown dropdown-action">
+										<a href="#" class="action-icon dropdown-toggle" data-bs-toggle="dropdown"
+											aria-expanded="false"><i class="material-icons">more_vert</i></a>
+										<div class="dropdown-menu dropdown-menu-right">
+											<a (click)="setEditData(mj.id)" class="dropdown-item" data-toggle="modal"
+												data-target="#edit_job"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+											<a (click)="confirm(mj.id)" class="dropdown-item" data-toggle="modal"
+												data-target="#delete_job"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<td>
+						<div *ngIf="manageJobs.length==0" style="justify-content: center;text-align: center;
+						align-items: center;">Jobs Not Found</div>
+				   </td>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Content -->
+
+	<!-- Add Job Modal -->
+	<div id="add_job" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Add Job</h5>
+
+					<button type="button" class="close" id="add" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<form [formGroup]="myForm" (ngSubmit)="addManageJobs()"  >
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<!-- {{manageJob |json}} -->
+									<label>Department</label>
+									<select formControlName="department"
+										(change)="getAllDesignationsByDepartment(inp1211)" #inp1211 name="id"
+										[(ngModel)]="manageJob.department.id">
+
+										<option value="0">Select</option>
+										<option *ngFor="let item of departments" [value]="item.id">{{ item.title }}
+										</option>
+									</select>
+									<span class="text-danger"
+										*ngIf="(myForm.get('department')?.touched ) && myForm.get('department')?.hasError('required')">
+										Department Is Required.
+									</span>
+
+
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Job Title</label>
+									<select name="jobTitle" formControlName="jobTitle"
+										[(ngModel)]="manageJob.jobTitle.id">
+										<option value="0">Select</option>
+										<option *ngFor="let item of designations" [value]="item.id">{{ item.title }}
+										</option>
+									</select>
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobTitle')?.touched ) && myForm.get('jobTitle')?.hasError('required')">
+										Job Title Is Required.
+									</span>
+
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Job Location</label>
+									<input class="form-control" formControlName="jobLocation" name="jobLocation"
+										[(ngModel)]="manageJob.jobLocation" type="text">
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobLocation')?.touched ) && myForm.get('jobLocation')?.hasError('required')">
+										Job Location Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobLocation')?.touched ) && myForm.get('jobLocation')?.hasError('minlength')">
+										Job Location length should be greater than 3.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobLocation')?.touched ) && myForm.get('jobLocation')?.hasError('minlength')">
+										Job Location length should be greater than 3.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobLocation')?.touched ) && myForm.get('jobLocation')?.hasError('pattern')">
+										Job Location is invalid.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>No of Vacancies</label>
+									<input class="form-control" formControlName="noOfVacancies" name="noOfVacancies"
+										[min]="1" [max]="50" [(ngModel)]="manageJob.noOfVacancies" type="text">
+									<span class="text-danger"
+										*ngIf="(myForm.get('noOfVacancies')?.touched ) && myForm.get('noOfVacancies')?.hasError('required')">
+										No of Vacancies Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('noOfVacancies')?.touched ) && myForm.get('noOfVacancies')?.hasError('min')">
+										No of Vacancies length should be greater than 1.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('noOfVacancies')?.touched ) && myForm.get('noOfVacancies')?.hasError('max')">
+										No of Vacancies length should be greater than 50.
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Experience</label>
+									<input class="form-control" formControlName="experience" (keydown)="false"
+										type="number" name="experience" [(ngModel)]="manageJob.experience" [min]="0"
+										[max]="35">
+									<span class="text-danger"
+										*ngIf="(myForm.get('experience')?.touched ) && myForm.get('experience')?.hasError('required')">
+										Experience Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('experience')?.touched ) && myForm.get('experience')?.hasError('min')">
+										Experience length should be greater than 2.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('experience')?.touched ) && myForm.get('experience')?.hasError('max')">
+										Experience length should be greater than 35.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Age</label>
+									<input class="form-control" formControlName="age" name="age" (keydown)="false"
+										[min]="15" [max]="65" [(ngModel)]="manageJob.age" type="number">
+									<span class="text-danger"
+										*ngIf="(myForm.get('age')?.touched ) && myForm.get('age')?.hasError('required')">
+										Age Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('age')?.touched ) && myForm.get('age')?.hasError('min')">
+										Age length should be greater than 15.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('age')?.touched ) && myForm.get('age')?.hasError('max')">
+										Age length should be greater than 35.
+									</span>
+
+
+								</div>
+							</div>
+						</div>
+
+
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Job Type</label>
+									<select name="jobType" formControlName="jobType" [(ngModel)]="manageJob.jobType"
+										list="jobType">
+										<option value="Full Time">Full Time</option>
+										<option value="Part Time">Part Time</option>
+										<option value="Internship">Internship</option>
+										<option value="Temporary">Temporary</option>
+									</select>
+									<span class="text-danger"
+										*ngIf="(myForm.get('jobType')?.touched ) && myForm.get('jobType')?.hasError('required')">
+										jobType Is Required.
+									</span>
+
+								</div>
+							</div>
+						</div>
+
+
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Salary From</label>
+									<input [min]="8000" name="salaryFrom" formControlName="salaryFrom" type="number"
+										[(ngModel)]="manageJob.salaryFrom" class="form-control">
+									<span class="text-danger"
+										*ngIf="(myForm.get('salaryFrom')?.touched ) && myForm.get('salaryFrom')?.hasError('required')">
+										Salary From Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('salaryFrom')?.touched ) && myForm.get('salaryFrom')?.hasError('min')">
+										Salary From 8000.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Salary To</label>
+									<input name="salaryTo" type="number" formControlName="salaryTo"
+										[min]="manageJob.salaryFrom" [readonly]="!manageJob.salaryFrom"
+										[(ngModel)]="manageJob.salaryTo" formControlName="salaryTo"
+										class="form-control">
+									<span class="text-danger"
+										*ngIf="(myForm.get('salaryTo')?.touched ) && myForm.get('salaryTo')?.hasError('required')">
+										Salary To Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('salaryTo')?.touched ) && myForm.get('salaryTo')?.hasError('min')">
+										Salary To 8000
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Start Date</label>
+									<!-- <input name="startDate" [(ngModel)]="manageJob.startDate" type="text" class="form-control datetimepicker"> -->
+									<input class="form-control " (keydown)="false" [min]="todayDates" name="startDate"
+										formControlName="startDate" [(ngModel)]="manageJob.startDate" type="date">
+									<span class="text-danger"
+										*ngIf="(myForm.get('startDate')?.touched ) && myForm.get('startDate')?.hasError('required')">
+										Start Date Is Required.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Expired Date</label>
+									<input class="form-control " (keydown)="false" [min]="manageJob.startDate"
+										[readonly]="!manageJob.startDate" name="expiredDate"
+										formControlName="expiredDate" [(ngModel)]="manageJob.expiredDate" type="date">
+									<!-- <input name="expiredDate" [(ngModel)]="manageJob.expiredDate" type="text" class="form-control datetimepicker"> -->
+									<span class="text-danger"
+										*ngIf="(myForm.get('expiredDate')?.touched ) && myForm.get('expiredDate')?.hasError('required')">
+										Expired Date Is Required.
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea name="description" [(ngModel)]="manageJob.description"
+										formControlName="description" class="form-control"></textarea>
+									<span class="text-danger"
+										*ngIf="(myForm.get('description')?.touched ) && myForm.get('description')?.hasError('required')">
+										Description Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(myForm.get('description')?.touched ) && myForm.get('description')?.hasError('minlength')">
+										Description length should be greater than 3.
+									</span>
+
+								</div>
+							</div>
+
+						</div>
+						<div class="submit-section">
+							<button type="submit" 
+								class="btn btn-primary submit-btn">Submit</button>
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Add Job Modal -->
+
+	<!-- Edit Job Modal -->
+	<div id="edit_job" class="modal custom-modal fade" role="dialog">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+			<button type="button" class="close" data-dismiss="modal">&times;</button>
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Edit Job</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form [formGroup]="Eadit">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<!-- {{manageJob |json}} -->
+									<label>Department</label>
+									<!-- <select formControlName="department"
+										(change)="getAllDesignationsByDepartment(inp1211)" #inp1211 name="id"
+										[(ngModel)]="manageJob.department.id">
+
+										<option value="0">Select</option>
+										<option *ngFor="let item of departments" [value]="item.id">{{ item.title }}
+										</option>
+									</select> -->
+									<input class="form-control" formControlName="department" name="title" 
+									readonly [(ngModel)]="manageJob.department.title" type="text">
+							
+									<span class="text-danger"
+										*ngIf="(Eadit.get('department')?.touched ) && Eadit.get('department')?.hasError('required')">
+										Department Is Required.
+									</span>
+
+
+								</div>
+							</div>
+
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Job Title</label>
+									<!-- <select name="jobTitle" formControlName="jobTitle"
+										[(ngModel)]="manageJob.jobTitle.id">
+										<option value="0">Select</option>
+										<option *ngFor="let item of designations" [value]="item.id">{{ item.title }}
+										</option>
+									</select> -->
+									<input class="form-control" formControlName="jobTitle" name="title" 
+									readonly [(ngModel)]="manageJob.jobTitle.title" type="text">
+							
+								
+									<span class="text-danger"
+										*ngIf="(Eadit.get('jobTitle')?.touched ) && Eadit.get('jobTitle')?.hasError('required')">
+										Job Title Is Required.
+									</span>
+
+								</div>
+							</div>
+
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Job Location</label>
+									<input class="form-control" formControlName="jobLocation" name="jobLocation"
+										[(ngModel)]="manageJob.jobLocation" type="text">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('jobLocation')?.touched ) && Eadit.get('jobLocation')?.hasError('required')">
+										Job Location Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('jobLocation')?.touched ) && Eadit.get('jobLocation')?.hasError('minlength')">
+										Job Location length should be greater than 3.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('jobLocation')?.touched ) && Eadit.get('jobLocation')?.hasError('minlength')">
+										Job Location length should be greater than 3.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('jobLocation')?.touched ) && Eadit.get('jobLocation')?.hasError('pattern')">
+										Job Location is invalid.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>No of Vacancies</label>
+									<input class="form-control" formControlName="noOfVacancies" name="noOfVacancies"
+										[min]="1" [max]="50" [(ngModel)]="manageJob.noOfVacancies" type="text">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('noOfVacancies')?.touched ) && Eadit.get('noOfVacancies')?.hasError('required')">
+										No of Vacancies Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('noOfVacancies')?.touched ) && Eadit.get('noOfVacancies')?.hasError('min')">
+										No of Vacancies length should be greater than 1.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('noOfVacancies')?.touched ) && Eadit.get('noOfVacancies')?.hasError('max')">
+										No of Vacancies length should be greater than 50.
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Experience</label>
+									<input class="form-control" formControlName="experience" (keydown)="false"
+										type="number" name="experience" [(ngModel)]="manageJob.experience" [min]="0"
+										[max]="35">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('experience')?.touched ) && Eadit.get('experience')?.hasError('required')">
+										Experience Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('experience')?.touched ) && Eadit.get('experience')?.hasError('min')">
+										Experience length should be greater than 2.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('experience')?.touched ) && Eadit.get('experience')?.hasError('max')">
+										Experience length should be greater than 35.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Age</label>
+									<input class="form-control" formControlName="age" name="age" (keydown)="false"
+										[min]="15" [max]="65" [(ngModel)]="manageJob.age" type="number">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('age')?.touched ) && Eadit.get('age')?.hasError('required')">
+										Age Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('age')?.touched ) && Eadit.get('age')?.hasError('min')">
+										Age length should be greater than 15.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('age')?.touched ) && Eadit.get('age')?.hasError('max')">
+										Age length should be greater than 35.
+									</span>
+
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Salary From</label>
+									<input [min]="8000" name="salaryFrom" formControlName="salaryFrom" type="number"
+										[(ngModel)]="manageJob.salaryFrom" class="form-control">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('salaryFrom')?.touched ) && Eadit.get('salaryFrom')?.hasError('required')">
+										Salary From Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('salaryFrom')?.touched ) && Eadit.get('salaryFrom')?.hasError('min')">
+										Salary From 8000.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Salary To</label>
+									<input name="salaryTo" type="number" formControlName="salaryTo"
+										[min]="manageJob.salaryFrom" [readonly]="!manageJob.salaryFrom"
+										[(ngModel)]="manageJob.salaryTo" formControlName="salaryTo"
+										class="form-control">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('salaryTo')?.touched ) && Eadit.get('salaryTo')?.hasError('required')">
+										Salary To Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('salaryTo')?.touched ) && Eadit.get('salaryTo')?.hasError('min')">
+										Salary To 8000
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Start Date</label>
+									<!-- <input name="startDate" [(ngModel)]="manageJob.startDate" type="text" class="form-control datetimepicker"> -->
+									<input class="form-control " (keydown)="false" [min]="todayDates" name="startDate"
+										formControlName="startDate" [(ngModel)]="manageJob.startDate" type="date">
+									<span class="text-danger"
+										*ngIf="(Eadit.get('startDate')?.touched ) && Eadit.get('startDate')?.hasError('required')">
+										Start Date Is Required.
+									</span>
+
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>Expired Date</label>
+									<input class="form-control " (keydown)="false" [min]="manageJob.startDate"
+										[readonly]="!manageJob.startDate" name="expiredDate"
+										formControlName="expiredDate" [(ngModel)]="manageJob.expiredDate" type="date">
+									<!-- <input name="expiredDate" [(ngModel)]="manageJob.expiredDate" type="text" class="form-control datetimepicker"> -->
+									<span class="text-danger"
+										*ngIf="(Eadit.get('expiredDate')?.touched ) && Eadit.get('expiredDate')?.hasError('required')">
+										Expired Date Is Required.
+									</span>
+
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Description</label>
+									<textarea name="description" [(ngModel)]="manageJob.description"
+										formControlName="description" class="form-control"></textarea>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('description')?.touched ) && Eadit.get('description')?.hasError('required')">
+										Description Is Required.
+									</span>
+									<span class="text-danger"
+										*ngIf="(Eadit.get('description')?.touched ) && Eadit.get('description')?.hasError('minlength')">
+										Description length should be greater than 3.
+									</span>
+
+								</div>
+							</div>
+
+						</div>
+						<div class="submit-section">
+							<button (click)="updateManageJobs()" data-dismiss="modal"
+								class="btn btn-primary submit-btn">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Edit Job Modal -->
+
+	<!-- Delete Job Modal -->
+	<div class="modal custom-modal fade" id="delete_job" role="dialog">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="form-header">
+						<h3>Delete Job</h3>
+						<p>Are you sure want to delete?</p>
+					</div>
+					<div class="modal-btn delete-action">
+						<div class="row">
+							<div class="col-6">
+								<a data-dismiss="modal" (click)="deleteManageJob()"
+									class="btn btn-primary continue-btn">Delete</a>
+							</div>
+							<div class="col-6">
+								<a href="javascript:void(0);" data-dismiss="modal"
+									class="btn btn-primary cancel-btn">Cancel</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Delete Job Modal -->
+
+</div>
+<!-- /Page Wrapper -->

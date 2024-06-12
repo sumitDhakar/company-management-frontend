@@ -1,0 +1,35 @@
+label{
+    cursor: pointer;
+}
+.fa-close{
+    cursor: pointer;
+   float: right ;
+}
+li>a:hover{
+    cursor: pointer;
+    color: rgb(253, 173, 74);
+    
+}
+li[_ngcontent-ng-c1578707926] > a[_ngcontent-ng-c1578707926].active {
+    cursor: pointer;
+    color: rgb(253, 173, 74);
+}
+.sidebar-menu li a.active {
+    background-color: #ffebda;
+}
+
+
+.bg-inverse-success {
+    background-color: green;
+}
+
+.bg-inverse-warning {
+    background-color: orange;
+}
+
+.bg-inverse-info {
+    background-color: blue;
+}
+.task-wrapper #task-list li .task-container.active {
+    background: #EBEEEF;
+}
